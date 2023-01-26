@@ -1,3 +1,4 @@
+name: CI
 on:
   workflow_dispatch:
 jobs:
@@ -6,7 +7,28 @@ jobs:
     runs-on: unbuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Enviorment checkout
+    - name: Enviorment Install
       run: |
-        gcc -v
-        g++ -v
+        apt install texinfo bison automake -y
+        apt install gcc g++ gcc-multilib g++-multilib -y
+        apt install make -y
+        
+    - name: Enviorment Checkout
+      run: |
+       gcc -v
+       g++ -v
+    - name: configure
+      run: |
+        mkdir build && cd build
+        ../configure --prefix=/gcc/ --disable-nls --disable-werror
+    - name: build
+      run: |
+        make all-install -j
+    - name: Upload release assets
+      uses: actions/upload-artifact@v1
+      with:
+          name: my-artifact
+          path: /gcc/
+
+  
+  
